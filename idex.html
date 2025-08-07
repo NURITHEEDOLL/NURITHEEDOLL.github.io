@@ -358,15 +358,13 @@
                 <p>• Results may vary based on your specific hair condition and follow-through</p>
                 <p>• This does not replace in-person professional hair services</p>
                 <p>• No refunds after consultation is completed</p>
-                <p>• Consultation will be delivered within 24-48 hours via email</p>
+                <p>• If I feel harassed or uncomfortable ,I can hang up without a refund </p>
             </div>
 
             <div class="disclaimer">
                 <h3>📋 What to Expect</h3>
                 <p>• You'll receive a detailed 10-minute video consultation</p>
-                <p>• Personalized product recommendations with links</p>
-                <p>• Step-by-step routine guide</p>
-                <p>• Follow-up email with written summary</p>
+                <p>• Where you can ask me anything!</p>
             </div>
 
             <div class="checkbox-group">
@@ -386,32 +384,98 @@
             
             <div class="price-display">$5.00</div>
 
-            <div class="calendar-placeholder">
-                <h3>📅 Select Your Preferred Time</h3>
-                <p>Calendar integration would appear here<br>
-                <small>(Connect with Calendly, Acuity, or Google Calendar API)</small></p>
-                <select id="timeSlot" style="margin-top: 15px; max-width: 300px;">
-                    <option value="">Choose available time slot</option>
-                    <option value="2024-01-15-10:00">Mon Jan 15 - 10:00 AM</option>
-                    <option value="2024-01-15-14:00">Mon Jan 15 - 2:00 PM</option>
-                    <option value="2024-01-16-09:00">Tue Jan 16 - 9:00 AM</option>
-                    <option value="2024-01-16-15:00">Tue Jan 16 - 3:00 PM</option>
-                </select>
+            <!-- CALENDLY INTEGRATION -->
+            <div class="calendar-section">
+                <h3 style="text-align: center; margin-bottom: 20px;">📅 Select Your Preferred Time</h3>
+                
+                <!-- Option 1: Embed Calendly Widget -->
+                <div id="calendly-embed" style="min-width:320px;height:700px;">
+                    <!-- Replace YOUR_CALENDLY_USERNAME with your actual Calendly username -->
+                    <div class="calendly-inline-widget" 
+                         data-url="https://calendly.com/nuritheedoll/hair-consultation" 
+                         style="min-width:320px;height:700px;"></div>
+                    <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
+                </div>
+                
+                <!-- Option 2: Calendly Popup Button (Alternative) -->
+                <!-- Uncomment this if you prefer a popup instead of embed -->
+                <!--
+                <div style="text-align: center;">
+                    <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
+                    <script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>
+                    <a href="" onclick="Calendly.initPopupWidget({url: 'https://calendly.com/nuritheedoll/hair-consultation'});return false;" 
+                       class="btn" style="display: inline-block; text-decoration: none;">
+                        Schedule Your Consultation
+                    </a>
+                </div>
+                -->
             </div>
 
             <div class="payment-section">
-                <h3>💳 Secure Payment</h3>
-                <p style="text-align: center; margin-bottom: 20px;">Complete your booking with PayPal</p>
+                <h3>💳 Secure Payment - $5.00</h3>
+                <p style="text-align: center; margin-bottom: 20px;">Complete your booking with secure payment</p>
                 
-                <div style="text-align: center; padding: 20px; background: rgba(255, 255, 255, 0.8); border-radius: 10px;">
-                    <p><strong>PayPal Button would appear here</strong></p>
-                    <p style="font-size: 12px; color: #666; margin-top: 10px;">
-                        Integrate with PayPal Checkout or Stripe
-                    </p>
-                    <button class="btn" style="margin-top: 15px;" onclick="processPayment()">
-                        Pay $5.00 with PayPal
-                    </button>
-                </div>
+                <!-- PAYPAL INTEGRATION -->
+                <!-- Replace YOUR_PAYPAL_CLIENT_ID with your actual client ID -->
+                <div id="paypal-button-container" style="max-width: 400px; margin: 0 auto;"></div>
+                
+                <!-- PayPal SDK -->
+                <script src="https://www.paypal.com/sdk/js?client-id=AXPL1AayInfZvMHHhylna5SyD8hRDMYUBlVXC3_zQBr2Sx1q18A6vJxCKN342Cd0BwXhcMmnJNsnnFDG&currency=USD"></script>
+                <script>
+                    paypal.Buttons({
+                        createOrder: function(data, actions) {
+                            return actions.order.create({
+                                purchase_units: [{
+                                    amount: {
+                                        value: '5.00'
+                                    },
+                                    description: 'Virtual Hair Consultation - 10 minutes'
+                                }]
+                            });
+                        },
+                        onApprove: function(data, actions) {
+                            return actions.order.capture().then(function(details) {
+                                // Payment successful
+                                console.log('Payment completed by ' + details.payer.name.given_name);
+                                
+                                // Store payment info
+                                localStorage.setItem('paymentCompleted', 'true');
+                                localStorage.setItem('paymentDetails', JSON.stringify({
+                                    transactionId: details.id,
+                                    payerName: details.payer.name.given_name + ' ' + details.payer.name.surname,
+                                    amount: '5.00',
+                                    date: new Date().toISOString()
+                                }));
+                                
+                                // Proceed to confirmation
+                                processPaymentSuccess(details);
+                            });
+                        },
+                        onError: function(err) {
+                            console.error('PayPal error:', err);
+                            alert('Payment failed. Please try again.');
+                        },
+                        onCancel: function(data) {
+                            alert('Payment cancelled. You can try again when ready.');
+                        }
+                    }).render('#paypal-button-container');
+                </script>
+                
+                <!-- Alternative: PayPal Standard Button (Simpler setup) -->
+                <!-- Uncomment this section if you prefer the standard PayPal button -->
+                <!--
+                <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank" style="text-align: center;">
+                    <input type="hidden" name="cmd" value="_xclick">
+                    <input type="hidden" name="business" value="YOUR_PAYPAL_EMAIL">
+                    <input type="hidden" name="item_name" value="Virtual Hair Consultation">
+                    <input type="hidden" name="amount" value="5.00">
+                    <input type="hidden" name="currency_code" value="USD">
+                    <input type="hidden" name="return" value="YOUR_WEBSITE_URL/success">
+                    <input type="hidden" name="cancel_return" value="YOUR_WEBSITE_URL">
+                    <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_paynowCC_LG.gif" 
+                           border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+                </form>
+                -->
             </div>
 
             <div class="btn-container">
@@ -506,31 +570,47 @@
         }
 
         function processPayment() {
-            // This is where you'd integrate with PayPal
-            // For demo purposes, we'll just show the confirmation
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const timeSlot = document.getElementById('timeSlot').value;
-            
-            if (!timeSlot) {
-                alert('Please select a time slot first.');
-                return;
-            }
-            
-            // Simulate payment processing
-            setTimeout(() => {
-                document.getElementById('confirmationDetails').innerHTML = `
-                    <strong>Name:</strong> ${name}<br>
-                    <strong>Email:</strong> ${email}<br>
-                    <strong>Scheduled Time:</strong> ${timeSlot.replace('-', ' at ')}<br>
-                    <strong>Amount Paid:</strong> $5.00
-                `;
-                showPage(5);
-            }, 2000);
+            // This function is now handled by PayPal integration above
+            // Check if using Calendly integration
+            alert('Please complete both calendar booking and payment to proceed.');
         }
 
-        // Initialize
-        updateProgress();
+        function processPaymentSuccess(paymentDetails) {
+            // Called after successful PayPal payment
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            
+            // You can also collect the selected time from Calendly if needed
+            // or have users book calendar after payment
+            
+            document.getElementById('confirmationDetails').innerHTML = `
+                <strong>Name:</strong> ${name}<br>
+                <strong>Email:</strong> ${email}<br>
+                <strong>Payment ID:</strong> ${paymentDetails.id}<br>
+                <strong>Amount Paid:</strong> $5.00<br>
+                <strong>Status:</strong> ✅ Payment Confirmed
+            `;
+            
+            // Send confirmation email (you can integrate with EmailJS here)
+            sendConfirmationEmail(name, email, paymentDetails);
+            
+            showPage(5);
+        }
+
+        function sendConfirmationEmail(name, email, paymentDetails) {
+            // Optional: Integrate with EmailJS to send confirmation emails
+            console.log('Sending confirmation email to:', email);
+            // EmailJS integration would go here
+        }
+
+        // Check if payment was completed (for page refresh scenarios)
+        window.onload = function() {
+            updateProgress();
+            if (localStorage.getItem('paymentCompleted') === 'true') {
+                const paymentDetails = JSON.parse(localStorage.getItem('paymentDetails'));
+                // Could auto-advance to confirmation if needed
+            }
+        }
     </script>
 </body>
 </html>
