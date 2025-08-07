@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hair Consultation Survey</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .survey-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .survey-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+
+        h2 {
+            color: #555;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+            font-weight: 400;
+        }
+
+        .welcome-content {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .welcome-content p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e1e5e9;
+            border-radius: 3px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 3px;
+            transition: width 0.6s ease;
+        }
+
+        .disclaimer {
+            background: rgba(255, 243, 205, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 4px solid #ff9800;
+        }
+
+        .disclaimer h3 {
+            color: #e65100;
+            margin-bottom: 10px;
+        }
+
+        .disclaimer p {
+            color: #bf360c;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        .calendar-placeholder {
+            background: rgba(240, 248, 255, 0.8);
+            border: 2px dashed #4ecdc4;
+            padding: 40px;
+            text-align: center;
+            border-radius: 15px;
+            margin: 25px 0;
+        }
+
+        .calendar-placeholder h3 {
+            color: #4ecdc4;
+            margin-bottom: 10px;
+        }
+
+        .calendar-placeholder p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .payment-section {
+            background: rgba(240, 255, 240, 0.8);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border: 2px solid #4caf50;
+        }
+
+        .payment-section h3 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .price-display {
+            font-size: 2em;
+            font-weight: bold;
+            color: #1976d2;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+        }
+
+        .back-btn {
+            background: #6c757d;
+            margin-right: 15px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            .survey-container {
+                padding: 25px;
+                margin: 10px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="survey-container">
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <!-- Welcome Page -->
+        <div class="page active" id="page1">
+            <h1>✨ Hair Consultation</h1>
+            <div class="welcome-content">
+                <p>Welcome! I'm excited to help you achieve your dream hair goals.</p>
+                <p>This personalized 10-minute consultation will help me understand your hair type, concerns, and styling preferences so I can provide tailored recommendations just for you.</p>
+                <p><strong>What you'll get:</strong></p>
+                <p>• Personalized hair care routine<br>
+                • Product recommendations<br>
+                • Styling tips and techniques<br>
+                • Professional advice from a certified stylist</p>
+            </div>
+            <div class="btn-container">
+                <button class="btn" onclick="nextPage()">Get Started</button>
+            </div>
+        </div>
+
+        <!-- Survey Questions Page -->
+        <div class="page" id="page2">
+            <h2>Tell Me About Your Hair</h2>
+            
+            <div class="form-group">
+                <label for="name">Your Name *</label>
+                <input type="text" id="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address *</label>
+                <input type="email" id="email" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="hairType">Hair Type *</label>
+                    <select id="hairType" required>
+                        <option value="">Select your hair type</option>
+                        <option value="straight">Straight</option>
+                        <option value="wavy">Wavy</option>
+                        <option value="curly">Curly</option>
+                        <option value="coily">Coily/Kinky</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="hairLength">Hair Length *</label>
+                    <select id="hairLength" required>
+                        <option value="">Select length</option>
+                        <option value="short">Short (above shoulders)</option>
+                        <option value="medium">Medium (shoulder length)</option>
+                        <option value="long">Long (below shoulders)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="concerns">Main Hair Concerns *</label>
+                <textarea id="concerns" placeholder="e.g., dryness, frizz, lack of volume, damage, etc." required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="goals">Your Hair Goals *</label>
+                <textarea id="goals" placeholder="What would you like to achieve with your hair?" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="routine">Current Hair Routine</label>
+                <textarea id="routine" placeholder="Tell me about your current washing, styling, and product routine"></textarea>
+            </div>
+
+            <div class="btn-container">
+                <button class="btn back-btn" onclick="prevPage()">Back</button>
+                <button class="btn" onclick="nextPage()">Continue</button>
+            </div>
+        </div>
+
+        <!-- Disclaimer Page -->
+        <div class="page" id="page3">
+            <h2>Important Information</h2>
+            
+            <div class="disclaimer">
+                <h3>⚠️ Please Read Carefully</h3>
+                <p><strong>Virtual Consultation Disclaimer:</strong></p>
+                <p>• This is a virtual consultation based on the information you provide</p>
+                <p>• Recommendations are general advice and may not suit every individual</p>
+                <p>• Results may vary based on your specific hair condition and follow-through</p>
+                <p>• This does not replace in-person professional hair services</p>
+                <p>• No refunds after consultation is completed</p>
+                <p>• Consultation will be delivered within 24-48 hours via email</p>
+            </div>
+
+            <div class="disclaimer">
+                <h3>📋 What to Expect</h3>
+                <p>• You'll receive a detailed 10-minute video consultation</p>
+                <p>• Personalized product recommendations with links</p>
+                <p>• Step-by-step routine guide</p>
+                <p>• Follow-up email with written summary</p>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="agreeTerms" required>
+                <label for="agreeTerms">I understand and agree to the terms above *</label>
+            </div>
+
+            <div class="btn-container">
+                <button class="btn back-btn" onclick="prevPage()">Back</button>
+                <button class="btn" onclick="nextPage()">I Agree, Continue</button>
+            </div>
+        </div>
+
+        <!-- Booking & Payment Page -->
+        <div class="page" id="page4">
+            <h2>Schedule Your Consultation</h2>
+            
+            <div class="price-display">$5.00</div>
+
+            <div class="calendar-placeholder">
+                <h3>📅 Select Your Preferred Time</h3>
+                <p>Calendar integration would appear here<br>
+                <small>(Connect with Calendly, Acuity, or Google Calendar API)</small></p>
+                <select id="timeSlot" style="margin-top: 15px; max-width: 300px;">
+                    <option value="">Choose available time slot</option>
+                    <option value="2024-01-15-10:00">Mon Jan 15 - 10:00 AM</option>
+                    <option value="2024-01-15-14:00">Mon Jan 15 - 2:00 PM</option>
+                    <option value="2024-01-16-09:00">Tue Jan 16 - 9:00 AM</option>
+                    <option value="2024-01-16-15:00">Tue Jan 16 - 3:00 PM</option>
+                </select>
+            </div>
+
+            <div class="payment-section">
+                <h3>💳 Secure Payment</h3>
+                <p style="text-align: center; margin-bottom: 20px;">Complete your booking with PayPal</p>
+                
+                <div style="text-align: center; padding: 20px; background: rgba(255, 255, 255, 0.8); border-radius: 10px;">
+                    <p><strong>PayPal Button would appear here</strong></p>
+                    <p style="font-size: 12px; color: #666; margin-top: 10px;">
+                        Integrate with PayPal Checkout or Stripe
+                    </p>
+                    <button class="btn" style="margin-top: 15px;" onclick="processPayment()">
+                        Pay $5.00 with PayPal
+                    </button>
+                </div>
+            </div>
+
+            <div class="btn-container">
+                <button class="btn back-btn" onclick="prevPage()">Back</button>
+            </div>
+        </div>
+
+        <!-- Confirmation Page -->
+        <div class="page" id="page5">
+            <div style="text-align: center;">
+                <h1 style="color: #4caf50; font-size: 3em;">✅</h1>
+                <h2>Booking Confirmed!</h2>
+                <div class="welcome-content">
+                    <p>Thank you for booking your hair consultation!</p>
+                    <p><strong>What happens next:</strong></p>
+                    <p>📧 You'll receive a confirmation email shortly<br>
+                    📅 Calendar invite will be sent to your email<br>
+                    💬 I'll email you 24 hours before with preparation tips<br>
+                    🎥 Join the video call at your scheduled time</p>
+                    
+                    <div style="background: rgba(240, 248, 255, 0.8); padding: 20px; border-radius: 10px; margin: 25px 0;">
+                        <p><strong>Your consultation details:</strong></p>
+                        <p id="confirmationDetails">Details will appear here after booking</p>
+                    </div>
+                    
+                    <p>Questions? Reply to your confirmation email and I'll get back to you!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        const totalPages = 5;
+
+        function updateProgress() {
+            const progress = (currentPage / totalPages) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function showPage(pageNum) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show current page
+            document.getElementById('page' + pageNum).classList.add('active');
+            currentPage = pageNum;
+            updateProgress();
+        }
+
+        function nextPage() {
+            if (currentPage === 2) {
+                // Validate required fields on survey page
+                const requiredFields = ['name', 'email', 'hairType', 'hairLength', 'concerns', 'goals'];
+                let isValid = true;
+                
+                requiredFields.forEach(fieldId => {
+                    const field = document.getElementById(fieldId);
+                    if (!field.value.trim()) {
+                        field.style.borderColor = '#f44336';
+                        isValid = false;
+                    } else {
+                        field.style.borderColor = '#e1e5e9';
+                    }
+                });
+                
+                if (!isValid) {
+                    alert('Please fill in all required fields.');
+                    return;
+                }
+            }
+            
+            if (currentPage === 3) {
+                // Check if terms are agreed
+                if (!document.getElementById('agreeTerms').checked) {
+                    alert('Please agree to the terms and conditions to continue.');
+                    return;
+                }
+            }
+            
+            if (currentPage < totalPages) {
+                showPage(currentPage + 1);
+            }
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                showPage(currentPage - 1);
+            }
+        }
+
+        function processPayment() {
+            // This is where you'd integrate with PayPal
+            // For demo purposes, we'll just show the confirmation
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const timeSlot = document.getElementById('timeSlot').value;
+            
+            if (!timeSlot) {
+                alert('Please select a time slot first.');
+                return;
+            }
+            
+            // Simulate payment processing
+            setTimeout(() => {
+                document.getElementById('confirmationDetails').innerHTML = `
+                    <strong>Name:</strong> ${name}<br>
+                    <strong>Email:</strong> ${email}<br>
+                    <strong>Scheduled Time:</strong> ${timeSlot.replace('-', ' at ')}<br>
+                    <strong>Amount Paid:</strong> $5.00
+                `;
+                showPage(5);
+            }, 2000);
+        }
+
+        // Initialize
+        updateProgress();
+    </script>
+</body>
+</html>
